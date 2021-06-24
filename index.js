@@ -4,7 +4,7 @@ const taskContainer = document.querySelector(".task_container");
 console.log(taskContainer);
 
 //global store
-const globalStore = [];
+let globalStore = [];
 
 const newCard = ({
     id,
@@ -16,7 +16,9 @@ const newCard = ({
 <div class="card">
     <div class="card-header d-flex justify-content-end gap-2">
         <button type="button" class="btn btn-outline-success rounded"><i class="fas fa-pencil-alt"></i></button>
-        <button type="button" class="btn btn-outline-danger rounded"><i class="fas fa-trash"></i></button>
+        <button id=${id} type="button" class="btn btn-outline-danger rounded" onclick="deleteCard.apply(this, arguments)">
+        <i id=${id} class="fas fa-trash""></i>
+        </button>
     </div>
     <img 
     src=${imageUrl} 
@@ -37,7 +39,7 @@ const newCard = ({
 
 const loadInitialTaskCards = () => {
       //access local storage
-      const getInitialData = localStorage.getItem("tasky");
+      const getInitialData = localStorage.tasky;
       if(!getInitialData) return;
 
       //convert stringyfied object to object
@@ -52,6 +54,8 @@ const loadInitialTaskCards = () => {
 
 
 };
+
+const updateLocalStorage = (data) => localStorage.setItem("tasky", JSON.stringify({cards: globalStore}));
 
 const saveChanges = () => {
     const taskData = {
@@ -70,6 +74,27 @@ const saveChanges = () => {
     globalStore.push(taskData);
 
     //application program interface (API)
-    localStorage.setItem("tasky", JSON.stringify({cards: globalStore}));
+    updateLocalStorage();
     console.log(globalStore);
+};
+
+const deleteCard = (event) =>{
+      //id of the card
+      event = window.event;
+      const targetID = event.target.id;
+      const tagname = event.target.tagname;
+      //search global storage array
+     globalStore.filter((cardObject)=>cardObject.id !== targetID);
+
+
+    updateLocalStorage();
+
+    if(tagname === "BUTTON"){
+        return taskContainer.removeChild(event.target.parentNode.parentNode.parentNode);
+    }
+    return taskContainer.removeChild(event.target.parentNode.parentNode.parentNode.parentNode);
+
+
+    
+
 };
